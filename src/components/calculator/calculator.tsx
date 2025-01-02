@@ -35,9 +35,7 @@ const formSchema = z.object({
   amortization: z.coerce.number().nonnegative({
     message: "The Amortization years must be greater than 0",
   }),
-  monthlyPayment: z.coerce.number().nonnegative({
-    message: "The Amortization years must be greater than 0",
-  }),
+  // monthlyPayment: z.string().regex(/^\d*(\.\d{0,2})?$/, "monthly payment should be a number"),
   downPaymentMethod: z.enum(["dollar", "percentage"]),
 });
 
@@ -56,36 +54,34 @@ export default function Calculator() {
       interestRate: 0,
       amortization: 25,
       downPaymentMethod: "dollar",
-      monthlyPayment: 0,
+      // monthlyPayment: 0,
     },
   });
 
   const onSubmit: SubmitHandler<z.infer<typeof formSchema>> = (data, event) => {
     event?.preventDefault();
-    console.log("form state", form.formState)
-    if (form.formState.isValid) {
-      console.log("form state", form.formState)
-      const result = monthlyPayment(
-        data.downPaymentMethod === "dollar"
+
+    console.log("form state", form.formState);
+    const result = monthlyPayment(
+      data.downPaymentMethod === "dollar"
         ? data.priceOfProperty - data.downPayment
         : data.priceOfProperty * (1 - data.downPayment / 100),
-        data.interestRate / 100,
-        data.amortization
-      );
-      
-      console.log("form result", result)
-      if (result > 0) {
-        setMortgageDetail({
-          principal:
-            data.downPaymentMethod === "dollar"
-              ? data.priceOfProperty - data.downPayment
-              : data.priceOfProperty * (1 - data.downPayment / 100),
-          interestRate: data.interestRate / 100,
-          amortization: data.amortization,
-        });
-        setMonthPayment(result);
-      }
+      data.interestRate / 100,
+      data.amortization
+    );
 
+    console.log("form result", result);
+    if (result > 0) {
+      setMortgageDetail({
+        principal:
+          data.downPaymentMethod === "dollar"
+            ? data.priceOfProperty - data.downPayment
+            : data.priceOfProperty * (1 - data.downPayment / 100),
+        interestRate: data.interestRate / 100,
+        amortization: data.amortization,
+      });
+
+      setMonthPayment(result);
     }
   };
   const handleClearAll = () => {
@@ -174,14 +170,14 @@ export default function Calculator() {
                 <DownPaymentMethod form={form} />
               </div>
               <FormField
-                  control={form.control}
-                  name="downPayment"
-                  render={() => (
-                    <FormItem>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                control={form.control}
+                name="downPayment"
+                render={() => (
+                  <FormItem>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
             </div>
             <MortgagePayment watch={form.watch} />
             <FormField
@@ -226,23 +222,6 @@ export default function Calculator() {
                 Clear All
               </Button>
             </div>
-            {form.getValues().monthlyPayment > 0 && <FormField
-              control={form.control}
-              name="monthlyPayment"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Monthly Payment</FormLabel>
-                  <FormControl>
-                    <CustomizedInput
-                      type="number"
-                      {...field}
-                      endAdornment={<>$</>}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />}
           </form>
         </Form>
         {monthPayment && (
@@ -251,8 +230,8 @@ export default function Calculator() {
             <Input
               type="number"
               id="month_payment"
-              disabled
-              defaultValue={monthPayment?.toFixed(2)}
+              readOnly
+              value={monthPayment?.toFixed(2)}
             />
           </div>
         )}
