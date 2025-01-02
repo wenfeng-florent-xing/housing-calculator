@@ -35,7 +35,6 @@ const formSchema = z.object({
   amortization: z.coerce.number().nonnegative({
     message: "The Amortization years must be greater than 0",
   }),
-  // monthlyPayment: z.string().regex(/^\d*(\.\d{0,2})?$/, "monthly payment should be a number"),
   downPaymentMethod: z.enum(["dollar", "percentage"]),
 });
 
@@ -54,14 +53,12 @@ export default function Calculator() {
       interestRate: 0,
       amortization: 25,
       downPaymentMethod: "dollar",
-      // monthlyPayment: 0,
     },
   });
 
   const onSubmit: SubmitHandler<z.infer<typeof formSchema>> = (data, event) => {
     event?.preventDefault();
 
-    console.log("form state", form.formState);
     const result = monthlyPayment(
       data.downPaymentMethod === "dollar"
         ? data.priceOfProperty - data.downPayment
@@ -70,7 +67,6 @@ export default function Calculator() {
       data.amortization
     );
 
-    console.log("form result", result);
     if (result > 0) {
       setMortgageDetail({
         principal:
@@ -226,7 +222,7 @@ export default function Calculator() {
         </Form>
         {monthPayment && (
           <div className="grid w-full max-w-sm items-center gap-1.5">
-            <Label htmlFor="number">Month Payment</Label>
+            <Label htmlFor="number">Monthly Payment</Label>
             <Input
               type="number"
               id="month_payment"
