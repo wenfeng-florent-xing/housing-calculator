@@ -203,7 +203,7 @@ export default function Calculator() {
                     <CustomizedInput
                       type="number"
                       {...field}
-                      endAdornment={<>$</>}
+                      endAdornment={<>years</>}
                     />
                   </FormControl>
                   <FormMessage />

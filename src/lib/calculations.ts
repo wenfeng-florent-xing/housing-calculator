@@ -1,11 +1,14 @@
 export function periodPayment(
   principle: number,
   interest: number,
-  Amortization: number
+  amortization: number
 ) {
+  console.log('interest', 1 + interest, amortization)
+  const interestAmortization = (1 + interest) ** amortization;
+  console.log("interest amortization", interestAmortization)
   return (
-    (principle * (interest * ((1 + interest) ^ Amortization))) /
-    (((1 + interest) ^ Amortization) - 1)
+    principle * ((interest * ((1 + interest) ** amortization)) /
+    (((1 + interest) ** amortization) - 1))
   );
 }
 
@@ -16,6 +19,7 @@ export function monthlyPayment(
 ) {
   const monthInterest = interestRate / 12;
   const monthAmortization = amortization * 12;
+  console.log('month interest, amortization, principle', monthInterest, monthAmortization, principle)
   return periodPayment(principle, monthInterest, monthAmortization);
 }
 
@@ -34,11 +38,12 @@ export function paymentDetail(
   const paymentDetail: PaymentDetail[] = [];
 
   const monthlyPay = monthlyPayment(principle, interestRate, amortization);
+  console.log('interest rate', interestRate)
   for (let i = 0; principle > 0; i++) {
     if (principle - monthlyPay > 0) {
-      const interestPayment = principle * (interestRate / 100 / 12);
+      const interestPayment = principle * (interestRate  / 12);
       const capital = monthlyPay - interestPayment;
-      principle = principle - monthlyPay;
+      principle = principle - capital;
 
       paymentDetail.push({
         month: i + 1,
