@@ -15,7 +15,6 @@ type props = {
     interestRate: number;
     amortization: number;
     downPaymentMethod: "dollar" | "percentage";
-    // monthlyPayment: number;
   }>;
 };
 
